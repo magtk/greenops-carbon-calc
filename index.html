@@ -1,0 +1,1947 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cyfrowy Ślad Węglowy</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark: #1a3a2a;
+    --green-mid: #2d5a3d;
+    --green-bright: #4a9e6b;
+    --green-light: #a8d5b5;
+    --green-pale: #e8f5ed;
+    --cream: #f7f3ed;
+    --brown: #8b5e3c;
+    --text: #1a2e1f;
+    --text-light: #4a6355;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      radial-gradient(ellipse at 20% 20%, rgba(74,158,107,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(26,58,42,0.06) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 3rem 0 2.5rem;
+    position: relative;
+  }
+
+  .leaf-deco {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 1rem;
+    animation: sway 4s ease-in-out infinite;
+  }
+
+  @keyframes sway {
+    0%, 100% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    color: var(--green-dark);
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  h1 span {
+    color: var(--green-bright);
+  }
+
+  .subtitle {
+    font-size: 1.05rem;
+    color: var(--text-light);
+    font-weight: 300;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* Sections */
+  .section {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 4px 24px rgba(26,58,42,0.07);
+    border: 1px solid rgba(74,158,107,0.12);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  .section:nth-child(1) { animation-delay: 0.1s; }
+  .section:nth-child(2) { animation-delay: 0.2s; }
+  .section:nth-child(3) { animation-delay: 0.3s; }
+  .section:nth-child(4) { animation-delay: 0.4s; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+    color: var(--green-dark);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .section-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--green-pale);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  /* Input rows */
+  .input-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    background: var(--green-pale);
+    border-radius: 12px;
+    transition: background 0.2s;
+  }
+
+  .input-row:hover { background: #daeee3; }
+
+  .input-label {
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .input-sublabel {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    font-weight: 300;
+    margin-top: 2px;
+  }
+
+  .input-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  input[type="number"] {
+    width: 80px;
+    padding: 0.4rem 0.6rem;
+    border: 1.5px solid var(--green-light);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--green-dark);
+    background: white;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="number"]:focus {
+    border-color: var(--green-bright);
+  }
+
+  .unit {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    min-width: 30px;
+  }
+
+  /* Teams section */
+  .toggle-group {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+  }
+
+  .toggle-btn {
+    padding: 0.5rem 1rem;
+    border: 1.5px solid var(--green-light);
+    border-radius: 999px;
+    background: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .toggle-btn.active {
+    background: var(--green-bright);
+    border-color: var(--green-bright);
+    color: white;
+  }
+
+  .teams-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .teams-box {
+    padding: 1rem;
+    background: var(--green-pale);
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  .teams-box.inactive {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  .teams-box label {
+    font-size: 0.82rem;
+    color: var(--text-light);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .teams-box input {
+    width: 70px;
+  }
+
+  /* Calculate button */
+  .calc-btn {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, var(--green-mid), var(--green-bright));
+    color: white;
+    border: none;
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 0.02em;
+    margin-top: 0.5rem;
+    box-shadow: 0 4px 16px rgba(74,158,107,0.3);
+  }
+
+  .calc-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(74,158,107,0.4);
+  }
+
+  .calc-btn:active { transform: translateY(0); }
+
+  /* Results */
+  #results {
+    display: none;
+  }
+
+  #results.visible {
+    display: block;
+    animation: fadeUp 0.4s ease forwards;
+  }
+
+  .total-card {
+    background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
+    color: white;
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .total-card::before {
+    content: '🌿';
+    position: absolute;
+    font-size: 8rem;
+    opacity: 0.06;
+    top: -1rem;
+    right: -1rem;
+  }
+
+  .total-label {
+    font-size: 0.9rem;
+    opacity: 0.75;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+  }
+
+  .total-value {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .total-unit {
+    font-size: 0.95rem;
+    opacity: 0.7;
+  }
+
+  /* Breakdown */
+  .breakdown {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .breakdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1rem;
+    background: var(--green-pale);
+    border-radius: 12px;
+  }
+
+  .breakdown-left {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .breakdown-icon { font-size: 1.2rem; }
+
+  .breakdown-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .breakdown-bar-wrap {
+    flex: 1;
+    margin: 0 1rem;
+    height: 6px;
+    background: var(--green-light);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .breakdown-bar {
+    height: 100%;
+    background: var(--green-bright);
+    border-radius: 999px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .breakdown-val {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--green-dark);
+    min-width: 70px;
+    text-align: right;
+  }
+
+  /* Comparison */
+  .comparison-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+  }
+
+  .comp-card {
+    background: var(--green-pale);
+    border-radius: 14px;
+    padding: 1.25rem;
+    text-align: center;
+    border: 1.5px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  .comp-card:hover { border-color: var(--green-light); }
+
+  .comp-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+  .comp-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: var(--green-dark);
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  .comp-label {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    line-height: 1.4;
+  }
+
+  /* Footer note */
+  .note {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--text-light);
+    margin-top: 2rem;
+    line-height: 1.6;
+    padding: 1rem;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(74,158,107,0.1);
+  }
+
+  /* Section checkbox toggle */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+  }
+  .section-header h2 {
+    margin-bottom: 0;
+    flex: 1;
+  }
+  .section-checkbox {
+    position: relative;
+    flex-shrink: 0;
+  }
+  .section-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  .section-checkbox label {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    cursor: pointer;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--text-light);
+    user-select: none;
+    white-space: nowrap;
+  }
+  .section-checkbox label::before {
+    content: '';
+    width: 38px;
+    height: 22px;
+    background: #d0d7d2;
+    border-radius: 999px;
+    transition: background 0.25s;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .section-checkbox label::after {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.25s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+  }
+  .section-checkbox input:checked + label::before {
+    background: var(--green-bright);
+  }
+  .section-checkbox input:checked + label::after {
+    transform: translateX(16px);
+  }
+  .section-checkbox input:checked + label {
+    color: var(--green-dark);
+  }
+
+  .section-body {
+    transition: opacity 0.25s, filter 0.25s;
+  }
+  .section-body.disabled {
+    opacity: 0.35;
+    pointer-events: none;
+    filter: grayscale(40%);
+  }
+
+  /* Dropdown select */
+  .styled-select {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    padding: 0.55rem 2.2rem 0.55rem 0.85rem;
+    border: 1.5px solid var(--green-light);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--green-dark);
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234a9e6b' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 0.75rem center;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .styled-select:focus { border-color: var(--green-bright); }
+
+  .select-row {
+    padding: 0.85rem 1rem;
+    background: var(--green-pale);
+    border-radius: 12px;
+    transition: background 0.2s;
+    margin-bottom: 0.75rem;
+  }
+  .select-row:hover { background: #daeee3; }
+  .select-row .input-label { margin-bottom: 0.45rem; }
+
+  .hosting-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    background: var(--green-pale);
+    border-radius: 12px;
+    padding: 0.35rem;
+  }
+
+  .hosting-tab {
+    flex: 1;
+    padding: 0.55rem 0.5rem;
+    border: none;
+    border-radius: 9px;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .hosting-tab.active {
+    background: white;
+    color: var(--green-dark);
+    box-shadow: 0 2px 8px rgba(26,58,42,0.1);
+  }
+
+  .hosting-panel { display: none; }
+  .hosting-panel.active { display: block; }
+
+  .info-box {
+    background: linear-gradient(135deg, #e8f5ed, #d8eee0);
+    border-left: 3px solid var(--green-bright);
+    border-radius: 0 10px 10px 0;
+    padding: 0.75rem 1rem;
+    font-size: 0.82rem;
+    color: var(--text-light);
+    line-height: 1.55;
+    margin-bottom: 1rem;
+  }
+
+  .info-box.warn {
+    background: linear-gradient(135deg, #fdf3e8, #fae3c8);
+    border-left-color: #d4822a;
+  }
+
+  .power-hint {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: white;
+    border-radius: 8px;
+    line-height: 1.5;
+  }
+
+  /* TCO Section */
+  .tco-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    background: var(--green-pale);
+    border-radius: 12px;
+    padding: 0.35rem;
+  }
+  .tco-tab {
+    flex: 1;
+    padding: 0.55rem 0.5rem;
+    border: none;
+    border-radius: 9px;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .tco-tab.active {
+    background: white;
+    color: var(--green-dark);
+    box-shadow: 0 2px 8px rgba(26,58,42,0.1);
+  }
+  .tco-panel { display: none; }
+  .tco-panel.active { display: block; }
+
+  .cost-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    background: var(--green-pale);
+    border-radius: 12px;
+    margin-bottom: 0.65rem;
+  }
+  .cost-row:hover { background: #daeee3; }
+  .cost-row.orange { background: #fdf3e8; }
+  .cost-row.orange:hover { background: #fae3c8; }
+
+  .cost-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .cost-input-wrap input {
+    width: 90px;
+  }
+  .cost-currency {
+    font-size: 0.82rem;
+    color: var(--text-light);
+    min-width: 28px;
+  }
+
+  .period-selector {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .period-btn {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1.5px solid var(--green-light);
+    border-radius: 8px;
+    background: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--text-light);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .period-btn.active {
+    background: var(--green-dark);
+    border-color: var(--green-dark);
+    color: white;
+  }
+
+  /* Chart canvas */
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 260px;
+    margin: 1.25rem 0 0.5rem;
+  }
+  canvas#tco_chart { width: 100% !important; height: 100% !important; }
+
+  .tco-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.25rem;
+  }
+  .tco-card {
+    border-radius: 14px;
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .tco-card.cloud {
+    background: linear-gradient(135deg, #e8f5ed, #d0ecda);
+    border: 2px solid var(--green-bright);
+  }
+  .tco-card.own {
+    background: linear-gradient(135deg, #fdf3e8, #fae3c8);
+    border: 2px solid #d4822a;
+  }
+  .tco-card-icon { font-size: 1.8rem; margin-bottom: 0.3rem; }
+  .tco-card-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    opacity: 0.65;
+    margin-bottom: 0.4rem;
+  }
+  .tco-card-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.15rem;
+  }
+  .tco-card.cloud .tco-card-value { color: var(--green-dark); }
+  .tco-card.own .tco-card-value { color: #7a3e0a; }
+  .tco-card-sub { font-size: 0.78rem; opacity: 0.65; }
+
+  .tco-verdict {
+    margin-top: 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    line-height: 1.55;
+    text-align: center;
+  }
+  .tco-verdict.cloud-wins {
+    background: var(--green-pale);
+    color: var(--green-dark);
+    border: 1px solid var(--green-light);
+  }
+  .tco-verdict.own-wins {
+    background: #fdf3e8;
+    color: #7a3e0a;
+    border: 1px solid #f0b97a;
+  }
+  .tco-verdict.tie {
+    background: #f5f5f5;
+    color: #555;
+    border: 1px solid #ddd;
+  }
+
+  .breakdown-tco {
+    margin-top: 1rem;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .btco-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.84rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    background: #fdf3e8;
+  }
+  .btco-item.cloud-item { background: var(--green-pale); }
+  .btco-item-val { font-weight: 600; }
+
+  /* Section inline result */
+  .section-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.1rem;
+    padding: 0.7rem 1rem;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--green-pale), #d4ead9);
+    border: 1px solid var(--green-light);
+    transition: all 0.3s;
+  }
+  .section-result.zero {
+    background: #f5f5f5;
+    border-color: #ddd;
+  }
+  .section-result.disabled-result {
+    background: #f5f5f5;
+    border-color: #e0e0e0;
+    opacity: 0.5;
+  }
+  .section-result-label {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    font-weight: 500;
+  }
+  .section-result-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--green-dark);
+  }
+  .section-result.zero .section-result-value { color: #aaa; }
+
+  /* TCO inline result */
+  .section-result.tco {
+    background: linear-gradient(135deg, #fdf3e8, #fae3c8);
+    border-color: #f0b97a;
+  }
+  .section-result.tco .section-result-value { color: #7a3e0a; }
+
+  /* Floating total bar */
+  .total-bar {
+    position: sticky;
+    bottom: 1rem;
+    z-index: 100;
+    background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
+    color: white;
+    border-radius: 16px;
+    padding: 0.85rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 8px 32px rgba(26,58,42,0.35);
+    margin-top: 1.5rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .total-bar:hover { transform: translateY(-2px); }
+  .total-bar-left { font-size: 0.85rem; opacity: 0.8; }
+  .total-bar-right {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+  .total-bar-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+  }
+  .total-bar-unit { font-size: 0.82rem; opacity: 0.75; }
+  .total-bar-hint { font-size: 0.75rem; opacity: 0.6; margin-top: 0.1rem; }
+
+  /* VS comparison card */
+  .vs-wrapper {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .vs-side {
+    border-radius: 16px;
+    padding: 1.5rem 1.25rem;
+    text-align: center;
+  }
+
+  .vs-side.online {
+    background: linear-gradient(135deg, #e8f5ed, #d0ecda);
+    border: 2px solid var(--green-bright);
+  }
+
+  .vs-side.offline {
+    background: linear-gradient(135deg, #fdf3e8, #fae3c8);
+    border: 2px solid #d4822a;
+  }
+
+  .vs-side-icon { font-size: 2rem; margin-bottom: 0.4rem; }
+
+  .vs-side-title {
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.75rem;
+    opacity: 0.7;
+  }
+
+  .vs-side-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.2rem;
+  }
+
+  .vs-side.online .vs-side-value { color: var(--green-dark); }
+  .vs-side.offline .vs-side-value { color: #7a3e0a; }
+
+  .vs-side-unit { font-size: 0.8rem; opacity: 0.65; }
+
+  .vs-badge {
+    background: white;
+    border-radius: 999px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-top: 0.75rem;
+    display: inline-block;
+  }
+
+  .vs-side.online .vs-badge { color: var(--green-mid); }
+  .vs-side.offline .vs-badge { color: #7a3e0a; }
+
+  .vs-divider {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .vs-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-light);
+  }
+
+  .vs-ratio {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  .vs-winner {
+    text-align: center;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+  }
+
+  .vs-winner.online-wins {
+    background: var(--green-pale);
+    color: var(--green-dark);
+    border: 1px solid var(--green-light);
+  }
+
+  .vs-winner.offline-wins {
+    background: #fdf3e8;
+    color: #7a3e0a;
+    border: 1px solid #f0b97a;
+  }
+
+  .vs-winner.tie {
+    background: #f5f5f5;
+    color: #555;
+    border: 1px solid #ddd;
+  }
+
+  .commute-breakdown {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: 1rem;
+  }
+
+  .commute-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.65rem 1rem;
+    background: #fdf3e8;
+    border-radius: 10px;
+    font-size: 0.88rem;
+  }
+
+  .commute-item-left { display: flex; align-items: center; gap: 0.5rem; }
+  .commute-item-val { font-weight: 600; color: #7a3e0a; }
+
+  @media (max-width: 580px) {
+    .vs-wrapper { grid-template-columns: 1fr; }
+    .vs-divider { flex-direction: row; justify-content: center; padding: 0.5rem 0; }
+  }
+
+  @media (max-width: 520px) {
+    .teams-row { grid-template-columns: 1fr; }
+    .breakdown-bar-wrap { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <span class="leaf-deco">🌿</span>
+    <h1>Cyfrowy<br><span>Ślad Węglowy</span></h1>
+    <p class="subtitle">Oblicz emisję CO₂ swoich codziennych aktywności cyfrowych i porównaj ją z jazdą samochodem</p>
+  </header>
+
+  <!-- SEKCJA 1: Wiadomości -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title" style="margin-bottom:0">
+        <span class="section-icon">✉️</span>
+        Wiadomości
+      </h2>
+      <div class="section-checkbox">
+        <input type="checkbox" id="chk_s1" checked onchange="toggleSection('s1', this.checked)">
+        <label for="chk_s1">Uwzględnij</label>
+      </div>
+    </div>
+    <div class="section-body" id="body_s1">
+    <div class="input-grid">
+      <div class="input-row">
+        <div>
+          <div class="input-label">SMS-y</div>
+          <div class="input-sublabel">≈ 0,014 g CO₂ / szt.</div>
+        </div>
+        <div class="input-control">
+          <input type="number" id="sms" value="0" min="0">
+          <span class="unit">szt.</span>
+        </div>
+      </div>
+      <div class="input-row">
+        <div>
+          <div class="input-label">E-maile bez załącznika</div>
+          <div class="input-sublabel">≈ 4 g CO₂ / szt.</div>
+        </div>
+        <div class="input-control">
+          <input type="number" id="email_plain" value="0" min="0">
+          <span class="unit">szt.</span>
+        </div>
+      </div>
+      <div class="input-row">
+        <div>
+          <div class="input-label">E-maile ze zdjęciem / małym plikiem</div>
+          <div class="input-sublabel">≈ 50 g CO₂ / szt.</div>
+        </div>
+        <div class="input-control">
+          <input type="number" id="email_photo" value="0" min="0">
+          <span class="unit">szt.</span>
+        </div>
+      </div>
+      <div class="input-row">
+        <div>
+          <div class="input-label">E-maile z dużym załącznikiem (&gt;5 MB)</div>
+          <div class="input-sublabel">≈ 350 g CO₂ / szt.</div>
+        </div>
+        <div class="input-control">
+          <input type="number" id="email_heavy" value="0" min="0">
+          <span class="unit">szt.</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-result zero" id="res_s1"><span class="section-result-label">✉️ Wiadomości — emisja CO₂</span><span class="section-result-value" id="res_s1_val">0 g CO₂</span></div>
+  </div><!-- /body_s1 -->
+  </div>
+
+  <!-- SEKCJA 2: Streaming i wyszukiwanie -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title" style="margin-bottom:0">
+        <span class="section-icon">📺</span>
+        Streaming i wyszukiwanie
+      </h2>
+      <div class="section-checkbox">
+        <input type="checkbox" id="chk_s2" checked onchange="toggleSection('s2', this.checked)">
+        <label for="chk_s2">Uwzględnij</label>
+      </div>
+    </div>
+    <div class="section-body" id="body_s2">
+    <div class="input-grid">
+      <div class="input-row">
+        <div>
+          <div class="input-label">Streaming wideo (YouTube, Netflix…)</div>
+          <div class="input-sublabel">≈ 1,6 g CO₂ / min</div>
+        </div>
+        <div class="input-control">
+          <input type="number" id="video" value="0" min="0">
+          <span class="unit">min</span>
+        </div>
+      </div>
+      <div class="input-row">
+        <div>
+          <div class="input-label">Streaming muzyki (Spotify…)</div>
+          <div class="input-sublabel">≈ 0,2 g CO₂ / min</div>
+        </div>
+        <div class="input-control">
+          <input type="number" id="music" value="0" min="0">
+          <span class="unit">min</span>
+        </div>
+      </div>
+      <div class="input-row">
+        <div>
+          <div class="input-label">Zapytania Google</div>
+          <div class="input-sublabel">≈ 0,2 g CO₂ / szt.</div>
+        </div>
+        <div class="input-control">
+          <input type="number" id="google" value="0" min="0">
+          <span class="unit">szt.</span>
+        </div>
+      </div>
+      <div class="input-row">
+        <div>
+          <div class="input-label">Zapytania do AI (ChatGPT, Claude…)</div>
+          <div class="input-sublabel">≈ 3 g CO₂ / szt.</div>
+        </div>
+        <div class="input-control">
+          <input type="number" id="ai" value="0" min="0">
+          <span class="unit">szt.</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-result zero" id="res_s2"><span class="section-result-label">📺 Streaming — emisja CO₂</span><span class="section-result-value" id="res_s2_val">0 g CO₂</span></div>
+  </div><!-- /body_s2 -->
+  </div>
+
+  <!-- SEKCJA 3: Teams / wideokonferencja -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title" style="margin-bottom:0">
+        <span class="section-icon">📹</span>
+        Wideokonferencja (MS Teams / Zoom)
+      </h2>
+      <div class="section-checkbox">
+        <input type="checkbox" id="chk_s3" checked onchange="toggleSection('s3', this.checked)">
+        <label for="chk_s3">Uwzględnij</label>
+      </div>
+    </div>
+    <div class="section-body" id="body_s3">
+
+    <div style="margin-bottom:1rem;">
+      <div class="input-row" style="margin-bottom:0.75rem;">
+        <div>
+          <div class="input-label">Czas trwania spotkania</div>
+        </div>
+        <div class="input-control">
+          <input type="number" id="meeting_min" value="90" min="0">
+          <span class="unit">min</span>
+        </div>
+      </div>
+      <div class="input-row">
+        <div>
+          <div class="input-label">Liczba uczestników</div>
+        </div>
+        <div class="input-control">
+          <input type="number" id="participants" value="15" min="1">
+          <span class="unit">os.</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size:0.88rem; font-weight:500; color:var(--text-light); margin-bottom:0.5rem;">Tryb połączenia:</div>
+    <div class="toggle-group">
+      <button class="toggle-btn active" onclick="setMode('camera')" id="btn_camera">📷 Wszyscy z kamerą</button>
+      <button class="toggle-btn" onclick="setMode('screenshare')" id="btn_screenshare">🖥️ Wykładowca udostępnia ekran</button>
+      <button class="toggle-btn" onclick="setMode('nocamera')" id="btn_nocamera">🎤 Tylko audio/czat</button>
+      <button class="toggle-btn" onclick="setMode('both')" id="btn_both">🎛️ Mix (własny dobór)</button>
+    </div>
+
+    <p id="mode_desc" style="font-size:0.8rem; color:var(--text-light); margin-top:0.75rem; line-height:1.5; min-height:2.5em;">
+      📷 Wszyscy uczestnicy mają włączone kamery.
+    </p>
+
+    <div id="both_inputs" style="display:none;">
+      <div class="teams-row">
+        <div class="teams-box" id="box_camera">
+          <label>Os. z kamerą</label>
+          <input type="number" id="camera_users" value="8" min="0">
+        </div>
+        <div class="teams-box" id="box_nocamera">
+          <label>Os. bez kamery</label>
+          <input type="number" id="nocamera_users" value="7" min="0">
+        </div>
+      </div>
+    </div>
+
+    <p style="font-size:0.78rem; color:var(--text-light); margin-top:1rem;">
+      Z kamerą ≈ 157 g CO₂/godz/os. &nbsp;|&nbsp; Udostępnianie ekranu (1 os.) + słuchacze bez kamery ≈ 36–50 g CO₂/godz łącznie &nbsp;|&nbsp; Tylko audio ≈ 36 g CO₂/godz/os.
+    </p>
+    <div class="section-result zero" id="res_s3"><span class="section-result-label">📹 Wideokonferencja — emisja CO₂</span><span class="section-result-value" id="res_s3_val">0 g CO₂</span></div>
+  </div><!-- /body_s3 -->
+  </div>
+
+  <!-- SEKCJA 4: Hostowanie strony -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title" style="margin-bottom:0">
+        <span class="section-icon">☁️</span>
+        Gdzie hostowana jest strona?
+      </h2>
+      <div class="section-checkbox">
+        <input type="checkbox" id="chk_s4" checked onchange="toggleSection('s4', this.checked)">
+        <label for="chk_s4">Uwzględnij</label>
+      </div>
+    </div>
+    <div class="section-body" id="body_s4">
+
+    <!-- Tabs: chmura vs własny serwer -->
+    <div class="hosting-tabs">
+      <button class="hosting-tab active" onclick="setHosting('cloud')" id="htab_cloud">☁️ Chmura (Azure/AWS)</button>
+      <button class="hosting-tab" onclick="setHosting('own')" id="htab_own">🖥️ Własny serwer / PC</button>
+    </div>
+
+    <!-- PANEL: Chmura -->
+    <div class="hosting-panel active" id="hpanel_cloud">
+      <div class="info-box">
+        ☁️ Centra danych Azure/AWS korzystają coraz częściej z OZE. Emisyjność ≈ <strong>200–300 g CO₂/kWh</strong> — znacznie niżej niż polska sieć (750 g/kWh). Mała strona statyczna zużywa ≈ 3,6 g CO₂/godz.
+      </div>
+      <div class="input-grid">
+        <div class="input-row">
+          <div>
+            <div class="input-label">Czas działania strony</div>
+            <div class="input-sublabel">≈ 3,6 g CO₂ / godz.</div>
+          </div>
+          <div class="input-control">
+            <input type="number" id="hosting_h" value="8" min="0">
+            <span class="unit">godz.</span>
+          </div>
+        </div>
+        <div class="input-row">
+          <div>
+            <div class="input-label">Liczba odwiedzin strony</div>
+            <div class="input-sublabel">≈ 0,5 g CO₂ / wizyta</div>
+          </div>
+          <div class="input-control">
+            <input type="number" id="visits" value="15" min="0">
+            <span class="unit">szt.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL: Własny serwer -->
+    <div class="hosting-panel" id="hpanel_own">
+      <div class="info-box warn">
+        ⚠️ Polska sieć energetyczna ma emisyjność ≈ <strong>750 g CO₂/kWh</strong> (wysoki udział węgla). Własny serwer na polskim prądzie często generuje <strong>2–3× więcej CO₂</strong> niż chmura zasilana OZE.
+      </div>
+
+      <div class="select-row">
+        <div class="input-label">🖥️ Typ komputera / serwera</div>
+        <select class="styled-select" id="pc_type" onchange="updatePCHint()">
+          <option value="15">Raspberry Pi 4/5 — ≈ 5–15 W (idealny serwer WWW)</option>
+          <option value="25">Mini PC (Intel NUC, Beelink) — ≈ 15–25 W</option>
+          <option value="45">Laptop jako serwer — ≈ 30–45 W</option>
+          <option value="80" selected>Typowy desktop (Core i5/Ryzen 5) — ≈ 60–80 W</option>
+          <option value="130">Wydajny desktop (Core i7/Ryzen 7) — ≈ 100–130 W</option>
+          <option value="200">Stacja robocza / stary PC — ≈ 150–200 W</option>
+          <option value="custom">Wpisz własną wartość (W)</option>
+        </select>
+        <div class="power-hint" id="pc_hint">
+          💡 Zasilacz 400W to szczyt — rzeczywiste zużycie przy normalnej pracy to zwykle 30–50% tej wartości. Liczymy realne zużycie, nie moc zasilacza.
+        </div>
+      </div>
+
+      <div class="input-row" id="pc_custom_row" style="display:none; margin-bottom:0.75rem;">
+        <div>
+          <div class="input-label">Własna moc komputera</div>
+          <div class="input-sublabel">rzeczywiste zużycie podczas pracy</div>
+        </div>
+        <div class="input-control">
+          <input type="number" id="pc_custom_w" value="80" min="1" max="1000">
+          <span class="unit">W</span>
+        </div>
+      </div>
+
+      <div class="select-row">
+        <div class="input-label">📡 Typ routera / switcha</div>
+        <select class="styled-select" id="router_type">
+          <option value="5">Router domowy (TP-Link, ASUS basic) — ≈ 5 W</option>
+          <option value="10" selected>Router średniej klasy — ≈ 8–10 W</option>
+          <option value="15">Router z Wi-Fi 6 / mesh — ≈ 12–15 W</option>
+          <option value="20">Router + switch 8-port — ≈ 15–20 W</option>
+          <option value="35">Router + switch + UPS — ≈ 30–35 W</option>
+        </select>
+      </div>
+
+      <div class="select-row">
+        <div class="input-label">🌍 Emisyjność sieci energetycznej</div>
+        <select class="styled-select" id="grid_emission">
+          <option value="750" selected>🇵🇱 Polska — ≈ 750 g CO₂/kWh (węgiel)</option>
+          <option value="450">🇩🇪 Niemcy — ≈ 450 g CO₂/kWh (mix)</option>
+          <option value="250">🇫🇷 Francja — ≈ 250 g CO₂/kWh (jądro + OZE)</option>
+          <option value="200">☁️ Azure/AWS centrum danych — ≈ 200–300 g CO₂/kWh</option>
+          <option value="100">🌱 OZE (panele, wiatr) — ≈ 50–100 g CO₂/kWh</option>
+        </select>
+      </div>
+
+      <div class="input-row">
+        <div>
+          <div class="input-label">Czas pracy serwera</div>
+          <div class="input-sublabel">Ile godzin działa podczas zajęć?</div>
+        </div>
+        <div class="input-control">
+          <input type="number" id="own_server_h" value="8" min="0">
+          <span class="unit">godz.</span>
+        </div>
+      </div>
+
+      <div class="input-row" style="margin-top:0.75rem;">
+        <div>
+          <div class="input-label">Liczba odwiedzin strony</div>
+          <div class="input-sublabel">≈ 0,5 g CO₂ / wizyta (po stronie klienta)</div>
+        </div>
+        <div class="input-control">
+          <input type="number" id="own_visits" value="15" min="0">
+          <span class="unit">szt.</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-result zero" id="res_s4"><span class="section-result-label">☁️ Hosting — emisja CO₂</span><span class="section-result-value" id="res_s4_val">0 g CO₂</span></div>
+  </div><!-- /body_s4 -->
+  </div>
+
+  <!-- SEKCJA 5: TCO - koszty finansowe -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title" style="margin-bottom:0">
+        <span class="section-icon">💰</span>
+        Koszt finansowy — chmura vs. własny serwer
+      </h2>
+      <div class="section-checkbox">
+        <input type="checkbox" id="chk_s5" checked onchange="toggleSection('s5', this.checked)">
+        <label for="chk_s5">Uwzględnij</label>
+      </div>
+    </div>
+    <div class="section-body" id="body_s5">
+    <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:1.25rem; line-height:1.6;">
+      Porównanie całkowitego kosztu posiadania (TCO) w perspektywie 3 lub 5 lat. Zakładamy, że informatyk jest już na etacie — liczymy tylko jego <em>czas poświęcony</em> na obsługę serwera.
+    </p>
+
+    <div style="font-size:0.85rem; font-weight:500; color:var(--text-light); margin-bottom:0.5rem;">Horyzont czasowy:</div>
+    <div class="period-selector">
+      <button class="period-btn active" onclick="setPeriod(3)" id="pbtn_3">3 lata</button>
+      <button class="period-btn" onclick="setPeriod(5)" id="pbtn_5">5 lat</button>
+    </div>
+
+    <div class="tco-tabs">
+      <button class="tco-tab active" onclick="setTcoTab('cloud')" id="ttab_cloud">☁️ Koszty chmury</button>
+      <button class="tco-tab" onclick="setTcoTab('own')" id="ttab_own">🖥️ Koszty własnego serwera</button>
+    </div>
+
+    <!-- CLOUD costs -->
+    <div class="tco-panel active" id="tpanel_cloud">
+      <div class="cost-row">
+        <div>
+          <div class="input-label">Azure Static Web Apps — abonament miesięczny</div>
+          <div class="input-sublabel">Plan Free: 0 zł | Plan Standard: ≈ 40–60 zł/mies.</div>
+        </div>
+        <div class="cost-input-wrap">
+          <input type="number" id="azure_monthly" value="0" min="0">
+          <span class="cost-currency">zł/mies.</span>
+        </div>
+      </div>
+      <div class="cost-row">
+        <div>
+          <div class="input-label">Domena własna (opcjonalnie)</div>
+          <div class="input-sublabel">≈ 50–120 zł/rok</div>
+        </div>
+        <div class="cost-input-wrap">
+          <input type="number" id="domain_yearly" value="80" min="0">
+          <span class="cost-currency">zł/rok</span>
+        </div>
+      </div>
+      <div class="cost-row">
+        <div>
+          <div class="input-label">Czas IT na wdrożenie i utrzymanie w chmurze</div>
+          <div class="input-sublabel">Szacowany czas rocznie (konfiguracja, aktualizacje)</div>
+        </div>
+        <div class="cost-input-wrap">
+          <input type="number" id="cloud_it_hours_yearly" value="8" min="0">
+          <span class="cost-currency">godz./rok</span>
+        </div>
+      </div>
+      <div class="cost-row">
+        <div>
+          <div class="input-label">Stawka roboczogodziny informatyka uczelnianego</div>
+          <div class="input-sublabel">Koszt wewnętrzny (brutto pracodawcy / godz.)</div>
+        </div>
+        <div class="cost-input-wrap">
+          <input type="number" id="it_rate" value="80" min="0">
+          <span class="cost-currency">zł/godz.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- OWN SERVER costs -->
+    <div class="tco-panel" id="tpanel_own">
+      <div class="cost-row orange">
+        <div>
+          <div class="input-label">Zakup sprzętu (PC + router + okablowanie)</div>
+          <div class="input-sublabel">Jednorazowo — np. mini PC ≈ 800–1500 zł, desktop ≈ 1500–3500 zł</div>
+        </div>
+        <div class="cost-input-wrap">
+          <input type="number" id="hw_cost" value="2000" min="0">
+          <span class="cost-currency">zł</span>
+        </div>
+      </div>
+      <div class="cost-row orange">
+        <div>
+          <div class="input-label">Licencja systemowa (Windows Server / Linux)</div>
+          <div class="input-sublabel">Windows Server Essentials ≈ 800–2000 zł | Linux: 0 zł</div>
+        </div>
+        <div class="cost-input-wrap">
+          <input type="number" id="license_cost" value="0" min="0">
+          <span class="cost-currency">zł</span>
+        </div>
+      </div>
+      <div class="cost-row orange">
+        <div>
+          <div class="input-label">Prąd — miesięczny koszt serwera</div>
+          <div class="input-sublabel">Wyliczany z sekcji powyżej lub wpisz ręcznie</div>
+        </div>
+        <div class="cost-input-wrap">
+          <input type="number" id="electricity_monthly" value="30" min="0">
+          <span class="cost-currency">zł/mies.</span>
+        </div>
+      </div>
+      <div class="cost-row orange">
+        <div>
+          <div class="input-label">Czas IT na obsługę serwera własnego</div>
+          <div class="input-sublabel">Aktualizacje, backupy, awarie, konfiguracja — rocznie</div>
+        </div>
+        <div class="cost-input-wrap">
+          <input type="number" id="own_it_hours_yearly" value="40" min="0">
+          <span class="cost-currency">godz./rok</span>
+        </div>
+      </div>
+      <div class="cost-row orange">
+        <div>
+          <div class="input-label">Utylizacja sprzętu po okresie</div>
+          <div class="input-sublabel">Koszt utylizacji elektroniki (WEEE) ≈ 100–300 zł</div>
+        </div>
+        <div class="cost-input-wrap">
+          <input type="number" id="disposal_cost" value="150" min="0">
+          <span class="cost-currency">zł</span>
+        </div>
+      </div>
+    </div>
+    <div class="section-result tco zero" id="res_s5"><span class="section-result-label">💰 TCO — szacowany koszt</span><span class="section-result-value" id="res_s5_val">—</span></div>
+  </div><!-- /body_s5 -->
+  </div>
+
+  <!-- SEKCJA 6: Zajęcia stacjonarne — dojazd -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title" style="margin-bottom:0">
+        <span class="section-icon">🏫</span>
+        Gdyby zajęcia były stacjonarne — dojazd
+      </h2>
+      <div class="section-checkbox">
+        <input type="checkbox" id="chk_s6" checked onchange="toggleSection('s6', this.checked)">
+        <label for="chk_s6">Uwzględnij</label>
+      </div>
+    </div>
+    <div class="section-body" id="body_s6">
+    <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:1.25rem; line-height:1.6;">
+      Podaj, ilu uczestników dojeżdża samochodem, a ilu komunikacją miejską, oraz odległość (w jedną stronę). Liczymy podróż tam i z powrotem.
+    </p>
+    <div class="input-grid">
+      <div class="input-row">
+        <div>
+          <div class="input-label">Osoby dojeżdżające samochodem</div>
+          <div class="input-sublabel">≈ 180 g CO₂/km (benzyna, 1 os. w aucie)</div>
+        </div>
+        <div class="input-control">
+          <input type="number" id="car_people" value="8" min="0">
+          <span class="unit">os.</span>
+        </div>
+      </div>
+      <div class="input-row">
+        <div>
+          <div class="input-label">Osoby dojeżdżające komunikacją miejską</div>
+          <div class="input-sublabel">≈ 68 g CO₂/km/os. (autobus/tramwaj)</div>
+        </div>
+        <div class="input-control">
+          <input type="number" id="transit_people" value="7" min="0">
+          <span class="unit">os.</span>
+        </div>
+      </div>
+      <div class="input-row">
+        <div>
+          <div class="input-label">Dystans w jedną stronę</div>
+          <div class="input-sublabel">Liczymy x2 (tam i z powrotem)</div>
+        </div>
+        <div class="input-control">
+          <input type="number" id="commute_km" value="27" min="0">
+          <span class="unit">km</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="section-result zero" id="res_s6"><span class="section-result-label">🏫 Dojazdy stacjonarne — emisja CO₂</span><span class="section-result-value" id="res_s6_val">0 g CO₂</span></div>
+  </div><!-- /body_s6 -->
+
+  <div class="total-bar" onclick="showFullResults()">
+    <div>
+      <div class="total-bar-left">🌿 Łączna emisja CO₂ (aktywne sekcje)</div>
+      <div class="total-bar-hint">↓ Kliknij, aby zobaczyć pełne wyniki i porównania</div>
+    </div>
+    <div class="total-bar-right">
+      <span class="total-bar-value" id="live_total">0</span>
+      <span class="total-bar-unit" id="live_unit">g CO₂</span>
+    </div>
+  </div>
+
+  <!-- WYNIKI -->
+  <div id="results">
+
+    <div class="total-card">
+      <div class="total-label">Łączna emisja CO₂</div>
+      <div class="total-value" id="res_total">0</div>
+      <div class="total-unit" id="res_unit">g CO₂</div>
+    </div>
+
+    <div class="section" style="animation-delay:0s;">
+      <h2 class="section-title">
+        <span class="section-icon">📊</span>
+        Skąd pochodzi emisja?
+      </h2>
+      <div class="breakdown" id="breakdown_list"></div>
+    </div>
+
+    <div class="section" style="animation-delay:0s;">
+      <h2 class="section-title">
+        <span class="section-icon">🚗</span>
+        A to jak jazda samochodem…
+      </h2>
+      <div class="comparison-grid" id="comparison_grid"></div>
+    </div>
+
+    <!-- ONLINE VS STACJONARNE -->
+    <div class="section" style="animation-delay:0s;">
+      <h2 class="section-title">
+        <span class="section-icon">⚖️</span>
+        Online vs. stacjonarne — porównanie
+      </h2>
+      <div class="vs-wrapper">
+        <div class="vs-side online">
+          <div class="vs-side-icon">💻</div>
+          <div class="vs-side-title">Zajęcia online</div>
+          <div class="vs-side-value" id="vs_online_val">—</div>
+          <div class="vs-side-unit" id="vs_online_unit"></div>
+          <div class="vs-badge" id="vs_online_badge"></div>
+        </div>
+        <div class="vs-divider">
+          <div class="vs-label">VS</div>
+          <div class="vs-ratio" id="vs_ratio"></div>
+        </div>
+        <div class="vs-side offline">
+          <div class="vs-side-icon">🏫</div>
+          <div class="vs-side-title">Zajęcia stacjonarne</div>
+          <div class="vs-side-value" id="vs_offline_val">—</div>
+          <div class="vs-side-unit" id="vs_offline_unit"></div>
+          <div class="vs-badge" id="vs_offline_badge"></div>
+        </div>
+      </div>
+      <div class="vs-winner" id="vs_winner"></div>
+      <div class="commute-breakdown" id="commute_breakdown"></div>
+    </div>
+
+    <!-- TCO RESULTS -->
+    <div class="section" style="animation-delay:0s;">
+      <h2 class="section-title">
+        <span class="section-icon">💰</span>
+        Koszt finansowy — podsumowanie TCO
+      </h2>
+      <div class="tco-summary-grid">
+        <div class="tco-card cloud">
+          <div class="tco-card-icon">☁️</div>
+          <div class="tco-card-label" id="tco_cloud_label">Chmura — 3 lata</div>
+          <div class="tco-card-value" id="tco_cloud_val">—</div>
+          <div class="tco-card-sub">zł łącznie</div>
+        </div>
+        <div class="tco-card own">
+          <div class="tco-card-icon">🖥️</div>
+          <div class="tco-card-label" id="tco_own_label">Własny serwer — 3 lata</div>
+          <div class="tco-card-value" id="tco_own_val">—</div>
+          <div class="tco-card-sub">zł łącznie</div>
+        </div>
+      </div>
+      <div class="tco-verdict" id="tco_verdict"></div>
+      <div class="chart-wrap">
+        <canvas id="tco_chart"></canvas>
+      </div>
+      <div class="breakdown-tco" id="tco_breakdown"></div>
+    </div>
+
+  </div>
+
+  <div class="note">
+    ⚠️ Wartości są przybliżone i zależą od wielu czynników: lokalizacji serwerów, miksu energetycznego, urządzenia końcowego.<br>
+    Źródła: The Shift Project, Mike Berners-Lee „How Bad Are Bananas?", IEA, Greenspector.
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+  // ── State ──────────────────────────────────────────────────────────────────
+  let meetingMode = 'camera';
+  let hostingMode = 'cloud';
+  let tcoPeriod   = 3;
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  function val(id) {
+    return parseFloat(document.getElementById(id)?.value) || 0;
+  }
+  function fmt(g) {
+    if (g >= 1000000) return (g/1000000).toFixed(2) + ' t CO₂';
+    if (g >= 1000)    return (g/1000).toFixed(2) + ' kg CO₂';
+    return g.toFixed(1) + ' g CO₂';
+  }
+  function fmtShort(g) {
+    if (g >= 1000000) return { v:(g/1000000).toFixed(2), u:'t CO₂' };
+    if (g >= 1000)    return { v:(g/1000).toFixed(2),    u:'kg CO₂' };
+    return { v:g.toFixed(1), u:'g CO₂' };
+  }
+  function isSectionEnabled(id) {
+    const chk = document.getElementById('chk_' + id);
+    return chk ? chk.checked : true;
+  }
+
+  // ── UI controls ────────────────────────────────────────────────────────────
+  function toggleSection(id, enabled) {
+    const body = document.getElementById('body_' + id);
+    if (body) body.classList.toggle('disabled', !enabled);
+    liveUpdate();
+  }
+
+  function setHosting(mode) {
+    hostingMode = mode;
+    document.querySelectorAll('.hosting-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('htab_' + mode).classList.add('active');
+    document.querySelectorAll('.hosting-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('hpanel_' + mode).classList.add('active');
+    liveUpdate();
+  }
+
+  function updatePCHint() {
+    const sel = document.getElementById('pc_type');
+    const customRow = document.getElementById('pc_custom_row');
+    const hint = document.getElementById('pc_hint');
+    const isCustom = sel.value === 'custom';
+    customRow.style.display = isCustom ? 'grid' : 'none';
+    const hints = {
+      '15':  '🍓 Raspberry Pi to mistrz oszczędności — pobiera tyle co zapalona żarówka LED.',
+      '25':  '💡 Mini PC: cichy, małe zużycie, wystarczająca moc dla stron WWW.',
+      '45':  '💻 Laptop: trochę bardziej efektywny niż desktop, mniej od mini PC.',
+      '80':  '🖥️ Typowy desktop: energochłonność 3–5× większa niż mini PC.',
+      '130': '⚡ Wydajny desktop: duże możliwości, ale prąd to odczujesz na rachunku.',
+      '200': '🏭 Stara stacja robocza — bardzo duże zużycie. Rozważ mini PC.',
+      'custom': '✏️ Wpisz rzeczywiste zużycie (możesz zmierzyć miernikiem energii).'
+    };
+    hint.textContent = hints[sel.value] || '';
+    liveUpdate();
+  }
+
+  function setMode(mode) {
+    meetingMode = mode;
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('btn_' + mode).classList.add('active');
+    document.getElementById('both_inputs').style.display = (mode === 'both') ? 'block' : 'none';
+    const desc = {
+      camera:      '📷 Wszyscy uczestnicy mają włączone kamery.',
+      screenshare: '🖥️ Wykładowca streamuje ekran — pozostałe 14 osób ogląda bez kamer. Najczęstszy tryb zajęć online.',
+      nocamera:    '🎤 Wszyscy wyłączyli kamery — tylko głos lub czat tekstowy.',
+      both:        '🎛️ Własny podział: wpisz ilu uczestników ma kamery, a ilu nie.'
+    };
+    document.getElementById('mode_desc').textContent = desc[mode] || '';
+    liveUpdate();
+  }
+
+  function setPeriod(y) {
+    tcoPeriod = y;
+    [3,5].forEach(n => document.getElementById('pbtn_'+n).classList.toggle('active', n===y));
+    liveUpdate();
+  }
+
+  function setTcoTab(tab) {
+    ['cloud','own'].forEach(t => {
+      document.getElementById('ttab_'+t).classList.toggle('active', t===tab);
+      document.getElementById('tpanel_'+t).classList.toggle('active', t===tab);
+    });
+    liveUpdate();
+  }
+
+  // ── Per-section calculations ───────────────────────────────────────────────
+  function calcS1() {
+    if (!isSectionEnabled('s1')) return 0;
+    return val('sms')*0.014 + val('email_plain')*4 + val('email_photo')*50 + val('email_heavy')*350;
+  }
+  function calcS2() {
+    if (!isSectionEnabled('s2')) return 0;
+    return val('video')*1.6 + val('music')*0.2 + val('google')*0.2 + val('ai')*3;
+  }
+  function calcS3() {
+    if (!isSectionEnabled('s3')) return 0;
+    const h = val('meeting_min') / 60;
+    const p = val('participants');
+    if (meetingMode === 'camera')      return h * p * 157;
+    if (meetingMode === 'nocamera')    return h * p * 36;
+    if (meetingMode === 'screenshare') return h * (157 + (p-1)*36 + 20);
+    return h * (val('camera_users')*157 + val('nocamera_users')*36);
+  }
+  function calcS4() {
+    if (!isSectionEnabled('s4')) return 0;
+    if (hostingMode === 'cloud') {
+      return val('hosting_h')*3.6 + val('visits')*0.5;
+    }
+    const pcSel = document.getElementById('pc_type').value;
+    const pcW   = pcSel === 'custom' ? val('pc_custom_w') : parseFloat(pcSel);
+    const rtW   = parseFloat(document.getElementById('router_type').value);
+    const gridG = parseFloat(document.getElementById('grid_emission').value);
+    return ((pcW + rtW) / 1000) * val('own_server_h') * gridG + val('own_visits')*0.5;
+  }
+  function calcS5() {
+    const y = tcoPeriod, m = y * 12, rate = val('it_rate');
+    const cloud = val('azure_monthly')*m + val('domain_yearly')*y + val('cloud_it_hours_yearly')*y*rate;
+    const own   = val('hw_cost') + val('license_cost') + val('electricity_monthly')*m + val('own_it_hours_yearly')*y*rate + val('disposal_cost');
+    return { cloud, own };
+  }
+  function calcS6() {
+    if (!isSectionEnabled('s6')) return 0;
+    const km2 = val('commute_km') * 2;
+    return val('car_people')*km2*180 + val('transit_people')*km2*68;
+  }
+
+  // ── Update a single section result chip ────────────────────────────────────
+  function updateChip(id, grams, opts) {
+    const chip = document.getElementById('res_' + id);
+    const valEl = document.getElementById('res_' + id + '_val');
+    if (!chip || !valEl) return;
+    const on = isSectionEnabled(id);
+    const isTco = opts && opts.tco;
+    if (!on) {
+      chip.className = 'section-result' + (isTco ? ' tco' : '') + ' disabled-result';
+      valEl.textContent = 'wyłączona';
+      return;
+    }
+    chip.className = 'section-result' + (isTco ? ' tco' : '') + (grams === 0 ? ' zero' : '');
+    valEl.textContent = fmt(grams);
+  }
+
+  // ── Live update — runs on every change ────────────────────────────────────
+  function liveUpdate() {
+    const g1 = calcS1(), g2 = calcS2(), g3 = calcS3(), g4 = calcS4(), g6 = calcS6();
+
+    updateChip('s1', g1);
+    updateChip('s2', g2);
+    updateChip('s3', g3);
+    updateChip('s4', g4);
+    updateChip('s6', g6);
+
+    // TCO chip
+    const s5chip = document.getElementById('res_s5');
+    const s5val  = document.getElementById('res_s5_val');
+    const s5on   = isSectionEnabled('s5');
+    if (s5chip && s5val) {
+      const tco = calcS5();
+      s5chip.className = 'section-result tco' + (!s5on ? ' disabled-result' : (tco.cloud===0 && tco.own===0 ? ' zero' : ''));
+      if (!s5on) {
+        s5val.textContent = 'wyłączona';
+      } else {
+        const cloudStr = `☁️ ${Math.round(tco.cloud).toLocaleString('pl-PL')} zł`;
+        const ownStr   = `🖥️ ${Math.round(tco.own).toLocaleString('pl-PL')} zł`;
+        s5chip.title = `Chmura: ${cloudStr} | Własny: ${ownStr}`;
+        if (tco.cloud < tco.own) {
+          s5val.innerHTML = `${cloudStr} <span style="opacity:.5;font-size:.85rem">vs</span> ${ownStr}`;
+          s5chip.style.background = 'linear-gradient(135deg,#e8f5ed,#d0ecda)';
+          s5chip.style.borderColor = '#4a9e6b';
+        } else {
+          s5val.innerHTML = `${ownStr} <span style="opacity:.5;font-size:.85rem">vs</span> ${cloudStr}`;
+          s5chip.style.background = 'linear-gradient(135deg,#fdf3e8,#fae3c8)';
+          s5chip.style.borderColor = '#d4822a';
+        }
+      }
+    }
+
+    // Floating total bar (CO₂ sections only)
+    const totalG = g1 + g2 + g3 + g4 + g6;
+    const t = fmtShort(totalG);
+    const tv = document.getElementById('live_total');
+    const tu = document.getElementById('live_unit');
+    if (tv) tv.textContent = t.v;
+    if (tu) tu.textContent = t.u;
+  }
+
+  // ── Full results panel (charts + comparisons) ─────────────────────────────
+  function showFullResults() {
+    const g1 = calcS1(), g2 = calcS2(), g3 = calcS3(), g4 = calcS4(), g6 = calcS6();
+    const totalG = g1 + g2 + g3 + g4 + g6;
+
+    if (totalG === 0 && !isSectionEnabled('s5')) {
+      alert('Włącz przynajmniej jedną sekcję i wpisz wartości, aby zobaczyć wyniki.');
+      return;
+    }
+
+    // Total card
+    const t = fmtShort(totalG);
+    document.getElementById('res_total').textContent = t.v;
+    document.getElementById('res_unit').textContent = t.u;
+
+    // Breakdown items
+    const items = [];
+    if (isSectionEnabled('s1')) {
+      const sms=val('sms')*0.014, ep=val('email_plain')*4, eph=val('email_photo')*50, ehv=val('email_heavy')*350;
+      if (sms) items.push({ icon:'💬', name:'SMS-y', val:sms });
+      if (ep)  items.push({ icon:'📧', name:'E-maile (bez załącznika)', val:ep });
+      if (eph) items.push({ icon:'📎', name:'E-maile ze zdjęciem', val:eph });
+      if (ehv) items.push({ icon:'📦', name:'E-maile (duże załączniki)', val:ehv });
+    }
+    if (isSectionEnabled('s2')) {
+      const vid=val('video')*1.6, mus=val('music')*0.2, ggl=val('google')*0.2, ai=val('ai')*3;
+      if (vid) items.push({ icon:'▶️', name:'Streaming wideo', val:vid });
+      if (mus) items.push({ icon:'🎵', name:'Streaming muzyki', val:mus });
+      if (ggl) items.push({ icon:'🔍', name:'Wyszukiwania Google', val:ggl });
+      if (ai)  items.push({ icon:'🤖', name:'Zapytania do AI', val:ai });
+    }
+    if (isSectionEnabled('s3') && g3) items.push({ icon:'📹', name:'Wideokonferencja', val:g3 });
+    if (isSectionEnabled('s4') && g4) {
+      items.push({ icon: hostingMode==='cloud' ? '☁️' : '🖥️', name:'Hosting strony', val:g4 });
+    }
+    if (isSectionEnabled('s6') && g6) items.push({ icon:'🚗', name:'Dojazdy stacjonarne', val:g6 });
+
+    const bl = document.getElementById('breakdown_list');
+    if (bl) {
+      bl.innerHTML = '';
+      [...items].sort((a,b)=>b.val-a.val).forEach(item => {
+        const pct = totalG > 0 ? (item.val/totalG*100) : 0;
+        bl.innerHTML += `<div class="breakdown-item">
+          <div class="breakdown-left"><span class="breakdown-icon">${item.icon}</span><span class="breakdown-name">${item.name}</span></div>
+          <div class="breakdown-bar-wrap"><div class="breakdown-bar" style="width:${pct}%"></div></div>
+          <span class="breakdown-val">${fmt(item.val)}</span></div>`;
+      });
+    }
+
+    // Comparisons
+    const km = totalG/180, espresso = totalG/280, phone = totalG/8.22;
+    function distStr() { return km < 1 ? `${(km*1000).toFixed(0)} m` : `${km.toFixed(2)} km`; }
+    const cg = document.getElementById('comparison_grid');
+    if (cg) cg.innerHTML = `
+      <div class="comp-card"><div class="comp-icon">🚗</div><div class="comp-value">${distStr()}</div><div class="comp-label">jazdy benzyniakiem<br><small>(≈ 180 g CO₂/km)</small></div></div>
+      <div class="comp-card"><div class="comp-icon">☕</div><div class="comp-value">${espresso.toFixed(1)}</div><div class="comp-label">filiżanek espresso<br><small>(≈ 280 g CO₂/szt.)</small></div></div>
+      <div class="comp-card"><div class="comp-icon">📱</div><div class="comp-value">${phone.toFixed(0)}</div><div class="comp-label">ładowań telefonu<br><small>(≈ 8 g CO₂/ładowanie)</small></div></div>
+      <div class="comp-card"><div class="comp-icon">🌳</div><div class="comp-value">${(totalG/1000/21).toFixed(4)}</div><div class="comp-label">drzew na rok pochłaniania<br><small>(drzewo ≈ 21 kg CO₂/rok)</small></div></div>`;
+
+    // Online vs stacjonarne
+    const onlineTotal = totalG, offlineTotal = g6;
+    const ratioEl  = document.getElementById('vs_ratio');
+    const winnerEl = document.getElementById('vs_winner');
+    function setVS(idVal, idUnit, idBadge, grams) {
+      const t2 = fmtShort(grams);
+      document.getElementById(idVal).textContent = t2.v;
+      document.getElementById(idUnit).textContent = t2.u;
+      const pp = fmtShort(grams/15);
+      document.getElementById(idBadge).textContent = `≈ ${pp.v} ${pp.u} / os.`;
+    }
+    setVS('vs_online_val','vs_online_unit','vs_online_badge', onlineTotal);
+    setVS('vs_offline_val','vs_offline_unit','vs_offline_badge', offlineTotal);
+    if (ratioEl && offlineTotal > 0 && onlineTotal > 0) {
+      const ratio = offlineTotal/onlineTotal;
+      ratioEl.textContent = `offline = ${ratio.toFixed(1)}× online`;
+      if (ratio > 1.15) {
+        winnerEl.className = 'vs-winner online-wins';
+        winnerEl.textContent = `✅ Zajęcia online generują ${ratio.toFixed(1)}× mniej CO₂ niż stacjonarne.`;
+      } else if (ratio < 0.85) {
+        winnerEl.className = 'vs-winner offline-wins';
+        winnerEl.textContent = `⚠️ Stacjonarne mają niższy ślad (${(1/ratio).toFixed(1)}×). Rozważ wyłączenie kamer.`;
+      } else {
+        winnerEl.className = 'vs-winner tie';
+        winnerEl.textContent = '≈ Obie formy mają porównywalny ślad węglowy.';
+      }
+    }
+    const cb = document.getElementById('commute_breakdown');
+    if (cb && isSectionEnabled('s6')) {
+      const km2 = val('commute_km')*2;
+      const carCO2 = val('car_people')*km2*180, transCO2 = val('transit_people')*km2*68;
+      cb.innerHTML = `
+        <div class="commute-item"><div class="commute-item-left"><span>🚗</span><span>${val('car_people')} os. × ${km2} km samochodem</span></div><span class="commute-item-val">${fmt(carCO2)}</span></div>
+        <div class="commute-item"><div class="commute-item-left"><span>🚌</span><span>${val('transit_people')} os. × ${km2} km komunikacją</span></div><span class="commute-item-val">${fmt(transCO2)}</span></div>
+        <div class="commute-item" style="font-weight:600;background:#f5ece0"><div class="commute-item-left"><span>🏫</span><span>Łącznie dojazdy</span></div><span class="commute-item-val">${fmt(offlineTotal)}</span></div>`;
+    }
+
+    // TCO
+    if (isSectionEnabled('s5')) {
+      const tco = calcS5();
+      const years = tcoPeriod;
+      document.getElementById('tco_cloud_label').textContent = `☁️ Chmura — ${years} lat`;
+      document.getElementById('tco_own_label').textContent   = `🖥️ Własny serwer — ${years} lat`;
+      document.getElementById('tco_cloud_val').textContent   = Math.round(tco.cloud).toLocaleString('pl-PL');
+      document.getElementById('tco_own_val').textContent     = Math.round(tco.own).toLocaleString('pl-PL');
+      const diff = Math.abs(tco.own - tco.cloud);
+      const diffPct = Math.round(diff / Math.min(tco.cloud||1, tco.own||1) * 100);
+      const vEl = document.getElementById('tco_verdict');
+      const rate = val('it_rate'), ownITh = val('own_it_hours_yearly');
+      if (tco.cloud < tco.own * 0.9) {
+        vEl.className = 'tco-verdict cloud-wins';
+        vEl.innerHTML = `✅ <strong>Chmura tańsza o ${Math.round(diff).toLocaleString('pl-PL')} zł (${diffPct}%)</strong> przez ${years} lat.<br><span style="font-weight:400;font-size:0.85rem">Ukryty koszt serwera: czas IT ${ownITh} godz./rok × ${rate} zł × ${years} lat = ${Math.round(ownITh*rate*years).toLocaleString('pl-PL')} zł.</span>`;
+      } else if (tco.own < tco.cloud * 0.9) {
+        vEl.className = 'tco-verdict own-wins';
+        vEl.innerHTML = `🖥️ <strong>Własny serwer tańszy o ${Math.round(diff).toLocaleString('pl-PL')} zł (${diffPct}%)</strong> przez ${years} lat.<br><span style="font-weight:400;font-size:0.85rem">Pamiętaj o ryzyku awarii — chmura oferuje 99,9% dostępności.</span>`;
+      } else {
+        vEl.className = 'tco-verdict tie';
+        vEl.innerHTML = `≈ <strong>Koszty zbliżone</strong>. Decyzja powinna uwzględnić niezawodność i bezpieczeństwo.`;
+      }
+      const fPLN = v => Math.round(v).toLocaleString('pl-PL') + ' zł';
+      const m = years * 12;
+      document.getElementById('tco_breakdown').innerHTML = `
+        <div style="font-size:.82rem;font-weight:600;color:var(--text-light);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.25rem">☁️ Składowe chmury</div>
+        <div class="btco-item cloud-item"><span>Abonament Azure (${m} mies.)</span><span class="btco-item-val">${fPLN(val('azure_monthly')*m)}</span></div>
+        <div class="btco-item cloud-item"><span>Domena (${years} lat)</span><span class="btco-item-val">${fPLN(val('domain_yearly')*years)}</span></div>
+        <div class="btco-item cloud-item"><span>Czas IT (${val('cloud_it_hours_yearly')} godz./rok × ${years} lat × ${rate} zł)</span><span class="btco-item-val">${fPLN(val('cloud_it_hours_yearly')*years*rate)}</span></div>
+        <div style="font-size:.82rem;font-weight:600;color:#7a3e0a;text-transform:uppercase;letter-spacing:.06em;margin:.75rem 0 .25rem">🖥️ Składowe własnego serwera</div>
+        <div class="btco-item"><span>Zakup sprzętu</span><span class="btco-item-val">${fPLN(val('hw_cost'))}</span></div>
+        ${val('license_cost') ? `<div class="btco-item"><span>Licencje</span><span class="btco-item-val">${fPLN(val('license_cost'))}</span></div>` : ''}
+        <div class="btco-item"><span>Prąd (${m} mies. × ${val('electricity_monthly')} zł)</span><span class="btco-item-val">${fPLN(val('electricity_monthly')*m)}</span></div>
+        <div class="btco-item"><span>Czas IT (${ownITh} godz./rok × ${years} lat × ${rate} zł)</span><span class="btco-item-val">${fPLN(ownITh*years*rate)}</span></div>
+        <div class="btco-item"><span>Utylizacja sprzętu</span><span class="btco-item-val">${fPLN(val('disposal_cost'))}</span></div>`;
+
+      // Chart
+      const labels = [], cloudCum = [], ownCum = [];
+      for (let y = 1; y <= years; y++) {
+        labels.push(`Rok ${y}`);
+        cloudCum.push(Math.round(val('azure_monthly')*12*y + val('domain_yearly')*y + val('cloud_it_hours_yearly')*y*rate));
+        ownCum.push(Math.round(val('hw_cost') + val('license_cost') + val('electricity_monthly')*12*y + ownITh*y*rate + (y===years ? val('disposal_cost') : 0)));
+      }
+      const ctx = document.getElementById('tco_chart').getContext('2d');
+      if (window._tcoChart) window._tcoChart.destroy();
+      window._tcoChart = new Chart(ctx, {
+        type:'line',
+        data:{ labels, datasets:[
+          { label:'☁️ Chmura', data:cloudCum, borderColor:'#4a9e6b', backgroundColor:'rgba(74,158,107,0.1)', borderWidth:2.5, pointRadius:5, pointBackgroundColor:'#4a9e6b', tension:0.3, fill:true },
+          { label:'🖥️ Własny serwer', data:ownCum, borderColor:'#d4822a', backgroundColor:'rgba(212,130,42,0.08)', borderWidth:2.5, pointRadius:5, pointBackgroundColor:'#d4822a', tension:0.3, fill:true }
+        ]},
+        options:{ responsive:true, maintainAspectRatio:false,
+          plugins:{ legend:{position:'top',labels:{font:{family:'DM Sans',size:12},padding:16}},
+            tooltip:{callbacks:{label:c=>` ${c.dataset.label}: ${c.parsed.y.toLocaleString('pl-PL')} zł`}}},
+          scales:{ y:{beginAtZero:true, ticks:{callback:v=>v.toLocaleString('pl-PL')+' zł',font:{family:'DM Sans',size:11}}, grid:{color:'rgba(0,0,0,0.05)'}},
+            x:{ticks:{font:{family:'DM Sans',size:11}},grid:{display:false}} }}
+      });
+    }
+
+    const r = document.getElementById('results');
+    r.classList.add('visible');
+    setTimeout(() => r.scrollIntoView({ behavior:'smooth', block:'start' }), 100);
+  }
+
+  // ── Boot ───────────────────────────────────────────────────────────────────
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('input[type="number"], select').forEach(el => {
+      el.addEventListener('input', liveUpdate);
+    });
+    liveUpdate();
+  });
+</script>
+</body>
+</html>
