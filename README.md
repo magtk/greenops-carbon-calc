@@ -4,6 +4,8 @@ Educational browser-based calculator for estimating the carbon footprint of sele
 
 All calculations are performed locally in the browser. No data is sent or stored.
 
+[live demo](https://calm-smoke-0c15da610.7.azurestaticapps.net/)
+
 Part of MagT's educational resources.
 
 # Disclaimer
